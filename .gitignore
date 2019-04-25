@@ -1,0 +1,16 @@
+.qmake.stash
+TcpClient
+TcpClient.pro.user
+main.o
+main.qrc
+moc_predefs.h
+moc_widget.cpp
+moc_widget.o
+qrc_main.cpp
+qrc_main.o
+qrc_pp.cpp
+qrc_pp.o
+start_id.txt
+testsend.jpg
+timRecv/
+widget.o
