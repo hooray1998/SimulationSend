@@ -72,12 +72,10 @@ private slots:
     int findOrCreate(QString);
     void recordMsg(QString send, QString msg);
     void showMsg();
-    void on_sendFilePushButton_clicked();
 
     void initUdpSocket();
     void sendData();
     void readPendingDatagrams();
-    void on_acceptFilePushButton_clicked();
 
 protected:
     bool eventFilter(QObject *target, QEvent *event);

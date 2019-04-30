@@ -14,3 +14,7 @@ start_id.txt
 testsend.jpg
 timRecv/
 widget.o
+Makefile.Debug
+Makefile.Release
+debug/
+release/

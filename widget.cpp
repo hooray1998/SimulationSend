@@ -28,16 +28,14 @@ Widget::Widget(QWidget *parent) :
 
 
     all_pianShu = 1;
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMaximumHeight(10);
 
 
     receiving = false;
     fileNum = 0;
     mode = -1;
-    curChat = "讨论组";
+    curChat = "设备";
     maxUserNum = 0;
-    findOrCreate("讨论组");
+    findOrCreate("设备");
     connected = false;
 
     this->setWindowTitle("fakeTim");
@@ -46,17 +44,6 @@ Widget::Widget(QWidget *parent) :
 
     //分配空间，指定父对象
     pTcpSocket = new QTcpSocket(this);
-
-    list = new QListView(ui->splitter_2);
-    list->setBatchSize(70);
-
-    list->setFont(QFont(NULL,25));
-    list->setGridSize(QSize(100,50));
-    model = new QStringListModel();
-    userList<<"讨论组";
-    model->setStringList(userList);
-    list->setModel(model);
-    list->setCurrentIndex(list->model()->index(0,0));
 
 
     connect(ui->lineEdit,SIGNAL(returnPressed()),this,SLOT(on_connectPushButton_clicked()));
@@ -76,7 +63,7 @@ Widget::Widget(QWidget *parent) :
 
     on_connectPushButton_clicked();//开机连接
     ui->textEditWrite->installEventFilter(this);//按enter自动发送
-    connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(chatWith(QModelIndex)));
+    //connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(chatWith(QModelIndex)));
     setStyleSheet("background-image:url(:/other/image/5.jpg)");
 
 
@@ -107,7 +94,7 @@ void Widget::on_connectPushButton_clicked()
         {
             qDebug()<<"请求断开。。。。。。。";
             userList.clear();
-            userList<<"讨论组";
+            userList<<"设备";
             model->setStringList(userList);
 
 
@@ -133,9 +120,8 @@ void Widget::on_connectPushButton_clicked()
 //给服务器发送消息
 void Widget::on_pushButton_2_clicked()
 {
-    ui->progressBar->show();
     if(!connected) return ;//连接成功才能发送
-    if(curChat=="讨论组")
+    if(curChat=="设备")
     {
         QString msg = QString("%1").arg(id,6,'0').append("02").append(ui->textEditWrite->toPlainText());
         pTcpSocket->write(msg.toUtf8().data());
@@ -162,7 +148,7 @@ void Widget::on_pushButton_2_clicked()
 void Widget::on_pushButton_3_clicked()
 {
     userList.clear();
-    userList<<"讨论组";
+    userList<<"设备";
     model->setStringList(userList);
 
 
@@ -336,7 +322,7 @@ void Widget::analyzeData()
             QString context = list.at(2);
             msg = QString("[%1]: %2").arg(send).arg(context);
             //ui->textEditRead->append(msg); //在后面追加新的消息
-            recordMsg("讨论组", msg);
+            recordMsg("设备", msg);
             changeChatWith(0);
         showMsg();
         }
@@ -378,6 +364,7 @@ void Widget::analyzeData()
 
 void Widget::changeChatWith(int cur)
 {
+    /*
     QModelIndex curindex = list->currentIndex();
 
     if(cur==-1)
@@ -398,6 +385,7 @@ void Widget::changeChatWith(int cur)
 
     curChat = model->data(list->currentIndex()).toByteArray();
     ui->chatNameLabel->setText(curChat);
+    */
 
     showMsg();
 }
@@ -464,6 +452,7 @@ void Widget::test()
     ui->nameLabel->setText("  "+id);
 }
 
+/*
 void Widget::on_sendFilePushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,"选择发送的文件",QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
@@ -490,6 +479,7 @@ void Widget::on_sendFilePushButton_clicked()
     DBG<<"send "<<startmsg<<"   to "<<66*udpPort;
 }
 
+*/
 void Widget::sendData()
 {
     if(!file.atEnd())
@@ -497,7 +487,6 @@ void Widget::sendData()
         QByteArray line = file.read(ONE_SIZE);
         udpSocket->writeDatagram( line , pTcpSocket->peerAddress(),66*udpPort);
         i++;
-        ui->progressBar->setValue(100*i/all_pianShu);
         qDebug() << "send over!" << i << line.size();
     }
     else
@@ -554,7 +543,6 @@ void Widget::readPendingDatagrams()
             {
                 file.resize(0);
                 i++;
-                ui->progressBar->setValue(100*i/all_pianShu);
                 udpSocket->writeDatagram("6",1, pTcpSocket->peerAddress(), 66*udpPort);
             }
         }
@@ -568,7 +556,6 @@ void Widget::readPendingDatagrams()
             file.write(datagram.data(),datagram.size());
 
             i++;
-            ui->progressBar->setValue(100*i/all_pianShu);
             udpSocket->writeDatagram("6",1, pTcpSocket->peerAddress(), 66*udpPort);
 
             DBG<<"port:"<<senderPort<<" "<< i <<"=>"<< datagram.size();
@@ -576,6 +563,7 @@ void Widget::readPendingDatagrams()
     }
 }
 
+/*
 void Widget::on_acceptFilePushButton_clicked()
 {
 
@@ -633,6 +621,7 @@ void Widget::on_acceptFilePushButton_clicked()
 
 }
 
+*/
 void Widget::closeEvent(QCloseEvent *e)
 {
     on_pushButton_3_clicked();
