@@ -32,21 +32,21 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QTabWidget *tabWidget;
     QWidget *tab;
-    QHBoxLayout *horizontalLayout_6;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_3;
     QLabel *chatNameLabel;
     QLabel *nameLabel;
     QTextEdit *textEditRead;
+    QHBoxLayout *horizontalLayout_6;
     QTextEdit *textEditWrite;
+    QPushButton *pushButton_2;
     QHBoxLayout *horizontalLayout_4;
     QSpacerItem *horizontalSpacer_3;
     QSpacerItem *horizontalSpacer_2;
-    QPushButton *pushButton_2;
     QSpacerItem *horizontalSpacer;
     QPushButton *pushButton_3;
     QWidget *tab_2;
-    QWidget *widget;
+    QWidget *layoutWidget;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
     QLabel *label;
@@ -80,12 +80,9 @@ public:
         tabWidget->setTabBarAutoHide(true);
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
-        horizontalLayout_6 = new QHBoxLayout(tab);
-        horizontalLayout_6->setSpacing(6);
-        horizontalLayout_6->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
-        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2 = new QVBoxLayout(tab);
         verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setSpacing(6);
@@ -133,12 +130,30 @@ public:
 
         verticalLayout_2->addWidget(textEditRead);
 
+        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6->setSpacing(6);
+        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
         textEditWrite = new QTextEdit(tab);
         textEditWrite->setObjectName(QStringLiteral("textEditWrite"));
         textEditWrite->setMaximumSize(QSize(16777215, 250));
         textEditWrite->setFont(font1);
 
-        verticalLayout_2->addWidget(textEditWrite);
+        horizontalLayout_6->addWidget(textEditWrite);
+
+        pushButton_2 = new QPushButton(tab);
+        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
+        QSizePolicy sizePolicy3(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
+        pushButton_2->setSizePolicy(sizePolicy3);
+        pushButton_2->setMinimumSize(QSize(200, 40));
+        pushButton_2->setMaximumSize(QSize(500, 230));
+
+        horizontalLayout_6->addWidget(pushButton_2);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_6);
 
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(6);
@@ -150,18 +165,6 @@ public:
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer_2);
-
-        pushButton_2 = new QPushButton(tab);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
-        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
-        pushButton_2->setSizePolicy(sizePolicy3);
-        pushButton_2->setMinimumSize(QSize(100, 40));
-        pushButton_2->setMaximumSize(QSize(100, 40));
-
-        horizontalLayout_4->addWidget(pushButton_2);
 
         horizontalSpacer = new QSpacerItem(20, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
@@ -177,15 +180,13 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_4);
 
-
-        horizontalLayout_6->addLayout(verticalLayout_2);
-
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
-        widget = new QWidget(tab_2);
-        widget->setObjectName(QStringLiteral("widget"));
-        verticalLayout = new QVBoxLayout(widget);
+        layoutWidget = new QWidget(tab_2);
+        layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
+        layoutWidget->setGeometry(QRect(0, 0, 209, 74));
+        verticalLayout = new QVBoxLayout(layoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
@@ -193,12 +194,12 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        label = new QLabel(widget);
+        label = new QLabel(layoutWidget);
         label->setObjectName(QStringLiteral("label"));
 
         horizontalLayout->addWidget(label);
 
-        lineEdit = new QLineEdit(widget);
+        lineEdit = new QLineEdit(layoutWidget);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
 
         horizontalLayout->addWidget(lineEdit);
@@ -209,17 +210,17 @@ public:
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        label_2 = new QLabel(widget);
+        label_2 = new QLabel(layoutWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
 
         horizontalLayout_2->addWidget(label_2);
 
-        lineEdit_2 = new QLineEdit(widget);
+        lineEdit_2 = new QLineEdit(layoutWidget);
         lineEdit_2->setObjectName(QStringLiteral("lineEdit_2"));
 
         horizontalLayout_2->addWidget(lineEdit_2);
 
-        connectPushButton = new QPushButton(widget);
+        connectPushButton = new QPushButton(layoutWidget);
         connectPushButton->setObjectName(QStringLiteral("connectPushButton"));
 
         horizontalLayout_2->addWidget(connectPushButton);
@@ -253,7 +254,7 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'\345\215\216\346\226\207\344\273\277\345\256\213'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", Q_NULLPTR));
-        pushButton_2->setText(QApplication::translate("Widget", "\345\217\221\351\200\201", Q_NULLPTR));
+        pushButton_2->setText(QApplication::translate("Widget", "Reply", Q_NULLPTR));
         pushButton_3->setText(QApplication::translate("Widget", "\345\205\263\351\227\255", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("Widget", "\344\277\241\346\201\257", Q_NULLPTR));
         label->setText(QApplication::translate("Widget", "IP  \357\274\232", Q_NULLPTR));

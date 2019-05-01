@@ -66,6 +66,7 @@ private slots:
     void delUser(QString user);
 
     void analyzeData();
+    void SendText();
 
     void changeChatWith(int cur=-1);
 
@@ -106,6 +107,7 @@ private:
     QFile file;
     int i;
 
+    QString lastMsg;
 
 
     QTableWidget *fileWidget;

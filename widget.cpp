@@ -18,6 +18,7 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
     //读取配置文件
+    lastMsg = "init";
     QFile *f_ip = new QFile("init_ip.txt");
     if(f_ip->open(QIODevice::ReadOnly))
     {
@@ -117,27 +118,44 @@ void Widget::on_connectPushButton_clicked()
 }
 
 
-//给服务器发送消息
 void Widget::on_pushButton_2_clicked()
 {
+    double num = rand()%10000+(double)(rand()%100)/100.0;
+    QString msg;
+    if(lastMsg == "04"){
+        msg = QString::asprintf("%06d02%08.2f", id.toInt(),num);
+        pTcpSocket->write(msg.toUtf8().data());
+        QString str = "[Me]: " + msg;
+        ui->textEditRead->append(str);
+    }
+    else if(lastMsg == "06"){
+        msg = QString::asprintf("%06d03%08.2f%08.2f", id.toInt(),num,num);
+        pTcpSocket->write(msg.toUtf8().data());
+        QString str = "[Me]: " + msg;
+        ui->textEditRead->append(str);
+    }
+    else if(lastMsg == "07"){
+        msg = QString::asprintf("%06d02%08.2f", id.toInt(),num);
+        pTcpSocket->write(msg.toUtf8().data());
+        QString str = "[Me]: " + msg;
+        ui->textEditRead->append(str);
+    }
+
+
+
+}
+//给服务器发送消息
+void Widget::SendText()
+{
+    QString  msg;
     if(!connected) return ;//连接成功才能发送
     if(curChat=="设备")
     {
-        QString msg = QString("%1").arg(id,6,'0').append("02").append(ui->textEditWrite->toPlainText());
+        msg = QString("%1").arg(id,6,'0').append(ui->textEditWrite->toPlainText());
         pTcpSocket->write(msg.toUtf8().data());
     }
-    else
-    {
-        //获取编辑区域的内容
-        QString str = QString("SiLiao#%1#%2").arg(curChat).arg(ui->textEditWrite->toPlainText());
-        //给对方发送消息,当有中文的时候就是用使用utf8
-        pTcpSocket->write(str.toUtf8().data());
-    }
-
-    QString str = "[Me]: " + ui->textEditWrite->toPlainText();
-    //ui->textEditRead->append(str); //在后面追加新的消息
-    recordMsg(curChat, str);
-    showMsg();
+    QString str = "[Me]: " + msg;
+    ui->textEditRead->append(str);
 
     ui->textEditWrite->clear();
     ui->textEditWrite->setFocus();
@@ -169,7 +187,7 @@ bool Widget::eventFilter(QObject *target, QEvent *event)
              QKeyEvent *k = static_cast<QKeyEvent *>(event);
              if (k->key() == Qt::Key_Return )
              {
-                 on_pushButton_2_clicked();
+                 SendText();
                  return true;
              }
              else if (k->key() == Qt::Key_Tab && (k->modifiers() & Qt::ControlModifier))
@@ -298,9 +316,12 @@ void Widget::analyzeData()
 {
        //从通信套接字中间取出内容
 
-        QList<QByteArray> list = pTcpSocket->readAll().split('#');
-        QString msg;
+        lastMsg = (pTcpSocket->readAll());
 
+        QString msg = QString("[%1]: %2").arg("Server").arg(lastMsg);
+        ui->textEditRead->append(msg); //在后面追加新的消息
+
+        /*
         if(list.at(0)=="Logout")//-1
         {
             delUser(list.at(1));
@@ -359,6 +380,7 @@ void Widget::analyzeData()
             }
 
         }
+        */
 }
 
 
