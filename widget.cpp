@@ -17,6 +17,12 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
+    srand(time(NULL));
+    replyTimer = new QTimer();
+    connect(replyTimer, &QTimer::timeout, this, &Widget::stopReplyTimer);
+
+
     //读取配置文件
     lastMsg = "init";
     QFile *f_ip = new QFile("init_ip.txt");
@@ -120,6 +126,7 @@ void Widget::on_connectPushButton_clicked()
 
 void Widget::on_pushButton_2_clicked()
 {
+    srand(time(NULL));
     double num = rand()%10000+(double)(rand()%100)/100.0;
     QString msg;
     if(lastMsg == "04"){
@@ -199,37 +206,29 @@ bool Widget::eventFilter(QObject *target, QEvent *event)
     return QWidget::eventFilter(target,event);
 }
 
-void Widget::showLoginWidget()
+void Widget::showLoginWidget(bool autoLogin, char *argv)
 {
-    /*Id From file
-    QFile *file=new QFile("start_id.txt");
-    bool ok = file->open(QIODevice::ReadOnly|QIODevice::Text);
+    if(autoLogin){
+        //Id From file
+        //QFile *file=new QFile("startID");
+        //file->open(QIODevice::ReadOnly|QIODevice::Text);
+        //QString text(file->readAll());
+		QString id = QString(argv);
+        //QString id = QString::number(text.toInt());
 
-    if(ok)
-    {
-        QTextStream stm(file);
-        stm>>id;
-        file->close();
-        ok = file->open(QIODevice::WriteOnly|QIODevice::Text);
-        QTextStream stm2(file);
-        stm2<<QString::number(id.toInt()+1);
-        file->close();
-        delete file;
-        file = NULL;
+        this->show();
+        ui->textEditWrite->setFocus();
+        ui->nameLabel->setText("  "+id);
+
+        QString msg = QString("%1").arg(id,6,'0').append("01");
+        DBG<<msg<<"msg";
+        pTcpSocket->write(msg.toUtf8().data());
+
+        if(true)//auto to login
+            return ;
     }
 
 
-    this->show();
-    ui->textEditWrite->setFocus();
-    ui->nameLabel->setText("  "+id);
-    DBG<<"id"<<id;
-    //butongguo jia fa jiuhui chu bug.
-    QString msg = QString("1616%1").arg(id,2)+QString("01");
-    pTcpSocket->write(msg.toUtf8().data());
-
-    if(true)//auto to login
-        return ;
-        */
     loginWidget = new QWidget();
     loginWidget->resize(QSize(400,300));
     loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
@@ -321,6 +320,7 @@ void Widget::analyzeData()
         QString msg = QString("[%1]: %2").arg("Server").arg(lastMsg);
         ui->textEditRead->append(msg); //在后面追加新的消息
 
+        startReplyTimer();
         /*
         if(list.at(0)=="Logout")//-1
         {
@@ -648,4 +648,13 @@ void Widget::closeEvent(QCloseEvent *e)
 {
     on_pushButton_3_clicked();
     e->accept();
+}
+
+void Widget::startReplyTimer(){
+    replyTimer->start(1000);
+}
+
+void Widget::stopReplyTimer(){
+    replyTimer->stop();
+    on_pushButton_2_clicked();
 }

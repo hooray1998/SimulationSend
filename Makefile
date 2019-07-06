@@ -661,9 +661,8 @@ moc_predefs.h: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/mkspecs/features/data/dumm
 compiler_moc_header_make_all: moc_widget.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_widget.cpp
-moc_widget.cpp: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
+moc_widget.cpp: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qglobal.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig.h \
@@ -685,9 +684,10 @@ moc_widget.cpp: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporary
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qmutex.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnumeric.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qversiontagging.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstring.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qchar.h \
@@ -710,6 +710,9 @@ moc_widget.cpp: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporary
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qvarlengtharray.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qcontainerfwd.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject_impl.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfile.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfiledevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QFileIconProvider \
@@ -773,9 +776,6 @@ moc_widget.cpp: ../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporary
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QStandardPaths \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QWidget \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/QTcpSocket \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/qtcpsocket.h \
@@ -841,9 +841,8 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 ####### Compile
 
 main.o: main.cpp widget.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qglobal.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig.h \
@@ -865,9 +864,10 @@ main.o: main.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qmutex.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnumeric.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qversiontagging.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstring.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qchar.h \
@@ -890,6 +890,9 @@ main.o: main.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qvarlengtharray.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qcontainerfwd.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject_impl.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfile.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfiledevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QFileIconProvider \
@@ -953,9 +956,6 @@ main.o: main.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QStandardPaths \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QWidget \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/QTcpSocket \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/qtcpsocket.h \
@@ -1006,9 +1006,8 @@ main.o: main.cpp widget.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 widget.o: widget.cpp widget.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qglobal.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig-bootstrapped.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qconfig.h \
@@ -1030,9 +1029,10 @@ widget.o: widget.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qmutex.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnumeric.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qversiontagging.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qnamespace.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstring.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qchar.h \
@@ -1055,6 +1055,9 @@ widget.o: widget.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qvarlengtharray.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qcontainerfwd.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qobject_impl.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTemporaryFile \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtemporaryfile.h \
+		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qiodevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfile.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qfiledevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QFileIconProvider \
@@ -1118,9 +1121,6 @@ widget.o: widget.cpp widget.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QStandardPaths \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/QTimer \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qtimer.h \
-		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtCore/qbasictimer.h \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtWidgets/QWidget \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/QTcpSocket \
 		../../../SoftWare/qt5.9.3/5.9.3/gcc_64/include/QtNetwork/qtcpsocket.h \

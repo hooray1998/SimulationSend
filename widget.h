@@ -1,6 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#include <QTimer>
 #include <QTemporaryFile>
 #include <QFileIconProvider>
 #include <QtDebug>
@@ -51,7 +52,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
-    void showLoginWidget();
+    void showLoginWidget(bool autoLogin, char *argv);
     void test();
 private slots:
     void on_connectPushButton_clicked();
@@ -77,6 +78,9 @@ private slots:
     void initUdpSocket();
     void sendData();
     void readPendingDatagrams();
+
+    void startReplyTimer();
+    void stopReplyTimer();
 
 protected:
     bool eventFilter(QObject *target, QEvent *event);
@@ -117,6 +121,8 @@ private:
 
     int all_pianShu;
      QPixmap *mBackPic;
+
+    QTimer *replyTimer;
 };
 
 #endif // WIDGET_H
