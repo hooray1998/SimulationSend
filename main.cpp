@@ -5,8 +5,10 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    puts("sdf");
     Widget w;
-    w.showLoginWidget(true, argv[1]);
+    //w.showLoginWidget(false, b);
+    w.showLoginWidget();
 
     return a.exec();
 }

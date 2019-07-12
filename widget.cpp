@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QHostAddress>
+#include <time.h>
 #define ONE_SIZE 8000
 #define DBG qDebug()<<__FILE__<<__FUNCTION__<<"():"<<__LINE__
 //////////////////////////////
@@ -20,7 +21,7 @@ Widget::Widget(QWidget *parent) :
 
     srand(time(NULL));
     replyTimer = new QTimer();
-    connect(replyTimer, &QTimer::timeout, this, &Widget::stopReplyTimer);
+    connect(replyTimer, SIGNAL(timeout()), this, SLOT(stopReplyTimer()));
 
 
     //读取配置文件
@@ -56,14 +57,7 @@ Widget::Widget(QWidget *parent) :
     connect(ui->lineEdit,SIGNAL(returnPressed()),this,SLOT(on_connectPushButton_clicked()));
 
     //弹出来一个提示而已
-    connect(pTcpSocket, &QTcpSocket::connected,
-           [=]()
-           {
-               ui->connectPushButton->setText("已连接");
-               ui->textEditRead->append("连接成功");
-               connected = true;
-           }
-           );
+    connect(pTcpSocket, SIGNAL(connected()),this,SLOT(connectslot()) );
 
     //显示来自服务器的消息
     connect(pTcpSocket, SIGNAL(readyRead()),this,SLOT(analyzeData()));
@@ -128,23 +122,24 @@ void Widget::on_pushButton_2_clicked()
 {
     srand(time(NULL));
     double num = rand()%10000+(double)(rand()%100)/100.0;
-    QString msg;
+    char msg[25];
+
     if(lastMsg == "04"){
-        msg = QString::asprintf("%06d02%08.2f", id.toInt(),num);
-        pTcpSocket->write(msg.toUtf8().data());
-        QString str = "[Me]: " + msg;
+        sprintf(msg,"%06d02%08.2f", id.toInt(),num);
+        pTcpSocket->write(QString(msg).toUtf8().data());
+        QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "06"){
-        msg = QString::asprintf("%06d03%08.2f%08.2f", id.toInt(),num,num);
-        pTcpSocket->write(msg.toUtf8().data());
-        QString str = "[Me]: " + msg;
+        sprintf(msg,"%06d03%08.2f%08.2f", id.toInt(),num,num);
+        pTcpSocket->write(QString(msg).toUtf8().data());
+        QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "07"){
-        msg = QString::asprintf("%06d02%08.2f", id.toInt(),num);
-        pTcpSocket->write(msg.toUtf8().data());
-        QString str = "[Me]: " + msg;
+        sprintf(msg,"%06d02%08.2f", id.toInt(),num);
+        pTcpSocket->write(QString(msg).toUtf8().data());
+        QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
 
@@ -206,6 +201,35 @@ bool Widget::eventFilter(QObject *target, QEvent *event)
     return QWidget::eventFilter(target,event);
 }
 
+void Widget::showLoginWidget()
+{
+    loginWidget = new QWidget();
+    loginWidget->resize(QSize(400,300));
+    loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
+
+    name = new QLineEdit(loginWidget);
+    name->setMaxLength(3);
+    name->setPlaceholderText("用户名");
+    name->setFont(QFont(NULL,25));
+    //QLineEdit *secret = new QLineEdit(loginWidget);
+    //secret->setEchoMode(QLineEdit::Password);
+    //secret->setAttribute(Qt::WA_InputMethodEnabled, false);//屏蔽中文输入法
+    //secret->setPlaceholderText("密码");
+    //secret->setFont(QFont(NULL,25));
+    QPushButton *loginButton = new QPushButton(loginWidget);
+    loginButton->setText("登录");
+    loginButton->setFont(QFont(NULL,25));
+
+    name->setGeometry(50,50,300,50);
+    //secret->setGeometry(50,150,300,50);
+    loginButton->setGeometry(120,220,160,50);
+
+    loginWidget->show();
+
+    connect(name,SIGNAL(returnPressed()),this,SLOT(loginslot()) );
+    connect(loginButton, SIGNAL(clicked()),this, SLOT(loginslot()));
+}
+
 void Widget::showLoginWidget(bool autoLogin, char *argv)
 {
     if(autoLogin){
@@ -233,7 +257,7 @@ void Widget::showLoginWidget(bool autoLogin, char *argv)
     loginWidget->resize(QSize(400,300));
     loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
 
-    QLineEdit *name = new QLineEdit(loginWidget);
+    name = new QLineEdit(loginWidget);
     name->setMaxLength(3);
     name->setPlaceholderText("用户名");
     name->setFont(QFont(NULL,25));
@@ -252,38 +276,18 @@ void Widget::showLoginWidget(bool autoLogin, char *argv)
 
     loginWidget->show();
 
-    connect(name,&QLineEdit::returnPressed,
-            [=]()
-           {
-                id = name->text();
-                this->show();
-                ui->textEditWrite->setFocus();
-                ui->nameLabel->setText("  "+id);
-                loginWidget->close();
-                QString msg = QString("%1").arg(id,6,'0').append("01");
-                pTcpSocket->write(msg.toUtf8().data());
-           }
-           );
-    connect(loginButton, &QPushButton::clicked,
-            [=]()
-           {
-                id = name->text();
-                this->show();
-                ui->textEditWrite->setFocus();
-                ui->nameLabel->setText("  "+id);
-                loginWidget->close();
-                QString msg = QString("%1").arg(id,6,'0').append("01");
-                pTcpSocket->write(msg.toUtf8().data());
-           }
-           );
+    connect(name,SIGNAL(returnPressed()),this,SLOT(loginslot()) );
+    connect(loginButton, SIGNAL(clicked()),this, SLOT(loginslot()));
 }
 
 void Widget::chatWith(QModelIndex index)
 {
+    /*
     curChat = model->data(index).toByteArray();
     ui->chatNameLabel->setText(curChat);
 
     showMsg();
+    */
 }
 
 void Widget::addUser(QString user)
@@ -384,7 +388,7 @@ void Widget::analyzeData()
 }
 
 
-void Widget::changeChatWith(int cur)
+void Widget::changeChatWith()
 {
     /*
     QModelIndex curindex = list->currentIndex();
@@ -657,4 +661,23 @@ void Widget::startReplyTimer(){
 void Widget::stopReplyTimer(){
     replyTimer->stop();
     on_pushButton_2_clicked();
+}
+
+
+void Widget::connectslot()
+{
+   ui->connectPushButton->setText("已连接");
+   ui->textEditRead->append("连接成功");
+   connected = true;
+}
+
+void  Widget::loginslot()
+{
+    id = name->text();
+    this->show();
+    ui->textEditWrite->setFocus();
+    ui->nameLabel->setText("  "+id);
+    loginWidget->close();
+    QString msg = QString("%1").arg(id,6,'0').append("01");
+    pTcpSocket->write(msg.toUtf8().data());
 }

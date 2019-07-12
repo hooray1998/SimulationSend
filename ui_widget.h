@@ -77,7 +77,7 @@ public:
         tabWidget->setMaximumSize(QSize(499493, 434343));
         tabWidget->setTabPosition(QTabWidget::North);
         tabWidget->setIconSize(QSize(16, 8));
-        tabWidget->setTabBarAutoHide(true);
+        //tabWidget->setTabBarAutoHide(true);
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
         verticalLayout_2 = new QVBoxLayout(tab);

@@ -52,6 +52,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
+    void showLoginWidget();
     void showLoginWidget(bool autoLogin, char *argv);
     void test();
 private slots:
@@ -69,7 +70,7 @@ private slots:
     void analyzeData();
     void SendText();
 
-    void changeChatWith(int cur=-1);
+    void changeChatWith();
 
     int findOrCreate(QString);
     void recordMsg(QString send, QString msg);
@@ -82,6 +83,8 @@ private slots:
     void startReplyTimer();
     void stopReplyTimer();
 
+    void connectslot();
+    void loginslot();
 protected:
     bool eventFilter(QObject *target, QEvent *event);
     void closeEvent(QCloseEvent*e);
@@ -105,6 +108,7 @@ private:
     Record *record[MAX_USER];//切换窗口，
     int maxUserNum;
 
+    QLineEdit *name ;
 
     QUdpSocket *udpSocket;
     int udpPort;
