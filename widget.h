@@ -60,7 +60,7 @@ private slots:
 
     void on_pushButton_2_clicked();
 
-    void on_pushButton_3_clicked();
+    void Disconnect();
 
     void chatWith(QModelIndex index);
 
@@ -68,7 +68,7 @@ private slots:
     void delUser(QString user);
 
     void analyzeData();
-    void SendText();
+    //void SendText();
 
     void changeChatWith();
 
@@ -86,7 +86,7 @@ private slots:
     void connectslot();
     void loginslot();
 protected:
-    bool eventFilter(QObject *target, QEvent *event);
+    //bool eventFilter(QObject *target, QEvent *event);
     void closeEvent(QCloseEvent*e);
 
 private:

@@ -30,8 +30,8 @@ HEADERS  += widget.h
 
 FORMS    += widget.ui
 
-RESOURCES += \
-    main.qrc \
-    pp.qrc
+# RESOURCES += \
+ #    main.qrc \
+  #   pp.qrc
 
-RC_FILE = myapp.rc
+# RC_FILE = myapp.rc

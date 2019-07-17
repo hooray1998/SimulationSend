@@ -63,13 +63,14 @@ Widget::Widget(QWidget *parent) :
     connect(pTcpSocket, SIGNAL(readyRead()),this,SLOT(analyzeData()));
 
     on_connectPushButton_clicked();//开机连接
-    ui->textEditWrite->installEventFilter(this);//按enter自动发送
+    //ui->textEditWrite->installEventFilter(this);//按enter自动发送
     //connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(chatWith(QModelIndex)));
-    setStyleSheet("background-image:url(:/other/image/5.jpg)");
+//    setStyleSheet("background-image:url(:/other/image/5.jpg)");
 
 
 /////////////////////////////////////////////////////////
 //加载样式表
+/*
     QFile file(":/other/qss/psblack.css");
     if (file.open(QFile::ReadOnly)) {
         QString qss = QLatin1String(file.readAll());
@@ -78,6 +79,12 @@ Widget::Widget(QWidget *parent) :
         qApp->setStyleSheet(qss);
         file.close();
     }
+	*/
+
+    ui->text1->hide();
+    ui->text2->hide();
+    ui->doubleSpinBox1->hide();
+    ui->doubleSpinBox2->hide();
 
 /////////////////////////////////////////////////////////
 }
@@ -120,33 +127,36 @@ void Widget::on_connectPushButton_clicked()
 
 void Widget::on_pushButton_2_clicked()
 {
-    srand(time(NULL));
-    double num = rand()%10000+(double)(rand()%100)/100.0;
     char msg[25];
 
-    if(lastMsg == "04"){
-        sprintf(msg,"%06d02%08.2f", id.toInt(),num);
+    if(lastMsg == "04"){//request a
+        sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "06"){
-        sprintf(msg,"%06d03%08.2f%08.2f", id.toInt(),num,num);
+        sprintf(msg,"%06d03%08.3f%08.3f", id.toInt(),ui->doubleSpinBox1->value(),ui->doubleSpinBox2->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "07"){
-        sprintf(msg,"%06d02%08.2f", id.toInt(),num);
+        sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[Me]: " + QString(msg);
         ui->textEditRead->append(str);
     }
 
+    ui->text1->hide();
+    ui->text2->hide();
+    ui->doubleSpinBox1->hide();
+    ui->doubleSpinBox2->hide();
 
 
 }
 //给服务器发送消息
+/*
 void Widget::SendText()
 {
     QString  msg;
@@ -162,10 +172,11 @@ void Widget::SendText()
     ui->textEditWrite->clear();
     ui->textEditWrite->setFocus();
 }
+*/
 
 
 //断开连接
-void Widget::on_pushButton_3_clicked()
+void Widget::Disconnect()
 {
     userList.clear();
     userList<<"设备";
@@ -180,6 +191,7 @@ void Widget::on_pushButton_3_clicked()
 
     this->close();
 }
+/*
 bool Widget::eventFilter(QObject *target, QEvent *event)
 {
     if(target == ui->textEditWrite)
@@ -200,6 +212,7 @@ bool Widget::eventFilter(QObject *target, QEvent *event)
     }
     return QWidget::eventFilter(target,event);
 }
+*/
 
 void Widget::showLoginWidget()
 {
@@ -208,7 +221,7 @@ void Widget::showLoginWidget()
     loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
 
     name = new QLineEdit(loginWidget);
-    name->setMaxLength(3);
+    name->setMaxLength(6);
     name->setPlaceholderText("用户名");
     name->setFont(QFont(NULL,25));
     //QLineEdit *secret = new QLineEdit(loginWidget);
@@ -241,7 +254,7 @@ void Widget::showLoginWidget(bool autoLogin, char *argv)
         //QString id = QString::number(text.toInt());
 
         this->show();
-        ui->textEditWrite->setFocus();
+        //ui->textEditWrite->setFocus();
         ui->nameLabel->setText("  "+id);
 
         QString msg = QString("%1").arg(id,6,'0').append("01");
@@ -323,8 +336,27 @@ void Widget::analyzeData()
 
         QString msg = QString("[%1]: %2").arg("Server").arg(lastMsg);
         ui->textEditRead->append(msg); //在后面追加新的消息
+        if(lastMsg=="04"){
+            ui->text1->show();
+            ui->doubleSpinBox1->show();
+            ui->text1->setText("请输入显示值:");
+        }
+        else if(lastMsg=="06"){
+            ui->text1->show();
+            ui->doubleSpinBox1->show();
+            ui->text1->setText("请输入当前水量:");
+            ui->text2->show();
+            ui->doubleSpinBox2->show();
+            ui->text2->setText("请输入原值:");
+        }
+        else if(lastMsg=="07"){
+            ui->text1->show();
+            ui->doubleSpinBox1->show();
+            ui->text1->setText("请输入最终值:");
+        }
 
-        startReplyTimer();
+
+        //startReplyTimer();
         /*
         if(list.at(0)=="Logout")//-1
         {
@@ -474,7 +506,7 @@ void Widget::test()
 {
     this->show();
     id = QString("id%1").arg(rand()%100);
-    ui->textEditWrite->setFocus();
+//    ui->textEditWrite->setFocus();
     ui->nameLabel->setText("  "+id);
 }
 
@@ -650,7 +682,7 @@ void Widget::on_acceptFilePushButton_clicked()
 */
 void Widget::closeEvent(QCloseEvent *e)
 {
-    on_pushButton_3_clicked();
+    Disconnect();
     e->accept();
 }
 
@@ -675,9 +707,10 @@ void  Widget::loginslot()
 {
     id = name->text();
     this->show();
-    ui->textEditWrite->setFocus();
-    ui->nameLabel->setText("  "+id);
+    //ui->textEditWrite->setFocus();
+    ui->nameLabel->setText(id);
     loginWidget->close();
-    QString msg = QString("%1").arg(id,6,'0').append("01");
+	while(id.size()!=6) id.append(" ");
+    QString msg = id.append("01");
     pTcpSocket->write(msg.toUtf8().data());
 }
