@@ -19,6 +19,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
@@ -43,6 +44,7 @@ public:
     QLabel *text2;
     QDoubleSpinBox *doubleSpinBox2;
     QPushButton *pushButton_2;
+    QRadioButton *radioButton;
     QWidget *tab_2;
     QWidget *layoutWidget;
     QVBoxLayout *verticalLayout;
@@ -58,7 +60,7 @@ public:
     {
         if (Widget->objectName().isEmpty())
             Widget->setObjectName(QStringLiteral("Widget"));
-        Widget->resize(337, 653);
+        Widget->resize(656, 653);
         Widget->setStyleSheet(QStringLiteral(""));
         horizontalLayout_5 = new QHBoxLayout(Widget);
         horizontalLayout_5->setSpacing(6);
@@ -163,6 +165,11 @@ public:
 
         verticalLayout_2->addWidget(pushButton_2);
 
+        radioButton = new QRadioButton(tab);
+        radioButton->setObjectName(QStringLiteral("radioButton"));
+
+        verticalLayout_2->addWidget(radioButton);
+
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
@@ -234,6 +241,7 @@ public:
         text1->setText(QApplication::translate("Widget", "TextLabel", 0));
         text2->setText(QApplication::translate("Widget", "TextLabel", 0));
         pushButton_2->setText(QApplication::translate("Widget", "\345\233\236\345\244\215", 0));
+        radioButton->setText(QApplication::translate("Widget", "\350\207\252\345\212\250\345\233\236\345\244\215", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("Widget", "\344\277\241\346\201\257", 0));
         label->setText(QApplication::translate("Widget", "IP  \357\274\232", 0));
         lineEdit->setText(QApplication::translate("Widget", "127.0.0.1", 0));

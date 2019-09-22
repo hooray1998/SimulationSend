@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
+    <width>656</width>
     <height>653</height>
    </rect>
   </property>
@@ -175,6 +175,13 @@
          </property>
          <property name="text">
           <string>回复</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>自动回复</string>
          </property>
         </widget>
        </item>

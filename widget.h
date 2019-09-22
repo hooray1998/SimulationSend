@@ -53,35 +53,15 @@ public:
     ~Widget();
 
     void showLoginWidget();
-    void showLoginWidget(bool autoLogin, char *argv);
-    void test();
 private slots:
     void on_connectPushButton_clicked();
 
     void on_pushButton_2_clicked();
 
     void Disconnect();
-
-    void chatWith(QModelIndex index);
-
-    void addUser(QString user);
-    void delUser(QString user);
+    void slot_disconnect();
 
     void analyzeData();
-    //void SendText();
-
-    void changeChatWith();
-
-    int findOrCreate(QString);
-    void recordMsg(QString send, QString msg);
-    void showMsg();
-
-    void initUdpSocket();
-    void sendData();
-    void readPendingDatagrams();
-
-    void startReplyTimer();
-    void stopReplyTimer();
 
     void connectslot();
     void loginslot();
@@ -98,7 +78,6 @@ private:
 
     QString id;
     QWidget *loginWidget;
-    //QWidget *fileWidget;
     QStringListModel *model;
     QListView *list;
     QStringList userList;
@@ -117,16 +96,9 @@ private:
 
     QString lastMsg;
 
-
     QTableWidget *fileWidget;
     FileInfo    fileinfo[100];
-    int fileNum;
-    bool receiving;
 
-    int all_pianShu;
-     QPixmap *mBackPic;
-
-    QTimer *replyTimer;
 };
 
 #endif // WIDGET_H

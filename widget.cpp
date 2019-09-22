@@ -4,8 +4,6 @@
 #include <time.h>
 #define ONE_SIZE 8000
 #define DBG qDebug()<<__FILE__<<__FUNCTION__<<"():"<<__LINE__
-//////////////////////////////
-////
 /// 用户名居中显示
 /// 自己的信息靠右显示
 /// 服务器断开得有反应
@@ -20,9 +18,6 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
 
     srand(time(NULL));
-    replyTimer = new QTimer();
-    connect(replyTimer, SIGNAL(timeout()), this, SLOT(stopReplyTimer()));
-
 
     //读取配置文件
     lastMsg = "init";
@@ -33,17 +28,9 @@ Widget::Widget(QWidget *parent) :
         f_ip->close();
     }
 
-
-
-    all_pianShu = 1;
-
-
-    receiving = false;
-    fileNum = 0;
     mode = -1;
     curChat = "设备";
     maxUserNum = 0;
-    findOrCreate("设备");
     connected = false;
 
     this->setWindowTitle("fakeTim");
@@ -58,35 +45,18 @@ Widget::Widget(QWidget *parent) :
 
     //弹出来一个提示而已
     connect(pTcpSocket, SIGNAL(connected()),this,SLOT(connectslot()) );
+    connect(pTcpSocket, SIGNAL(disconnected()), this, SLOT(slot_disconnect()));
 
     //显示来自服务器的消息
     connect(pTcpSocket, SIGNAL(readyRead()),this,SLOT(analyzeData()));
 
     on_connectPushButton_clicked();//开机连接
-    //ui->textEditWrite->installEventFilter(this);//按enter自动发送
-    //connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(chatWith(QModelIndex)));
-//    setStyleSheet("background-image:url(:/other/image/5.jpg)");
-
-
-/////////////////////////////////////////////////////////
-//加载样式表
-/*
-    QFile file(":/other/qss/psblack.css");
-    if (file.open(QFile::ReadOnly)) {
-        QString qss = QLatin1String(file.readAll());
-        QString paletteColor = qss.mid(20, 7);
-        qApp->setPalette(QPalette(QColor(paletteColor)));
-        qApp->setStyleSheet(qss);
-        file.close();
-    }
-	*/
 
     ui->text1->hide();
     ui->text2->hide();
     ui->doubleSpinBox1->hide();
     ui->doubleSpinBox2->hide();
 
-/////////////////////////////////////////////////////////
 }
 
 Widget::~Widget()
@@ -114,7 +84,6 @@ void Widget::on_connectPushButton_clicked()
         }
         else
         {
-
             //获得服务器的IP和端口
             QString ip = ui->lineEdit->text();
             qint16 port = ui->lineEdit_2->text().toInt();
@@ -127,24 +96,28 @@ void Widget::on_connectPushButton_clicked()
 
 void Widget::on_pushButton_2_clicked()
 {
+    if(ui->radioButton->isChecked()){
+        ui->doubleSpinBox1->setValue(rand()%5000+500);
+        ui->doubleSpinBox2->setValue(rand()%2000+1500);
+    }
     char msg[25];
 
-    if(lastMsg == "04"){//request a
+    if(lastMsg=="04"||lastMsg=="14"||lastMsg=="24"){//request a
         sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
-        QString str = "[Me]: " + QString(msg);
+        QString str = "[ME][回复a值]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "06"){
         sprintf(msg,"%06d03%08.3f%08.3f", id.toInt(),ui->doubleSpinBox1->value(),ui->doubleSpinBox2->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
-        QString str = "[Me]: " + QString(msg);
+        QString str = "[ME][回复b值]: " + QString(msg);
         ui->textEditRead->append(str);
     }
     else if(lastMsg == "07"){
         sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
-        QString str = "[Me]: " + QString(msg);
+        QString str = "[ME][回复r值]: " + QString(msg);
         ui->textEditRead->append(str);
     }
 
@@ -155,25 +128,6 @@ void Widget::on_pushButton_2_clicked()
 
 
 }
-//给服务器发送消息
-/*
-void Widget::SendText()
-{
-    QString  msg;
-    if(!connected) return ;//连接成功才能发送
-    if(curChat=="设备")
-    {
-        msg = QString("%1").arg(id,6,'0').append(ui->textEditWrite->toPlainText());
-        pTcpSocket->write(msg.toUtf8().data());
-    }
-    QString str = "[Me]: " + msg;
-    ui->textEditRead->append(str);
-
-    ui->textEditWrite->clear();
-    ui->textEditWrite->setFocus();
-}
-*/
-
 
 //断开连接
 void Widget::Disconnect()
@@ -181,7 +135,6 @@ void Widget::Disconnect()
     userList.clear();
     userList<<"设备";
     model->setStringList(userList);
-
 
    ui->connectPushButton->setText("未连接");
    connected = false;
@@ -191,510 +144,114 @@ void Widget::Disconnect()
 
     this->close();
 }
-/*
-bool Widget::eventFilter(QObject *target, QEvent *event)
-{
-    if(target == ui->textEditWrite)
-    {
-        if(event->type() == QEvent::KeyPress)
-        {
-             QKeyEvent *k = static_cast<QKeyEvent *>(event);
-             if (k->key() == Qt::Key_Return )
-             {
-                 SendText();
-                 return true;
-             }
-             else if (k->key() == Qt::Key_Tab && (k->modifiers() & Qt::ControlModifier))
-             {
-                 changeChatWith();
-             }
-        }
-    }
-    return QWidget::eventFilter(target,event);
-}
-*/
 
 void Widget::showLoginWidget()
 {
     loginWidget = new QWidget();
     loginWidget->resize(QSize(400,300));
-    loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
 
     name = new QLineEdit(loginWidget);
     name->setMaxLength(6);
     name->setPlaceholderText("用户名");
     name->setFont(QFont(NULL,25));
-    //QLineEdit *secret = new QLineEdit(loginWidget);
-    //secret->setEchoMode(QLineEdit::Password);
-    //secret->setAttribute(Qt::WA_InputMethodEnabled, false);//屏蔽中文输入法
-    //secret->setPlaceholderText("密码");
-    //secret->setFont(QFont(NULL,25));
+
     QPushButton *loginButton = new QPushButton(loginWidget);
     loginButton->setText("登录");
     loginButton->setFont(QFont(NULL,25));
 
     name->setGeometry(50,50,300,50);
-    //secret->setGeometry(50,150,300,50);
+
     loginButton->setGeometry(120,220,160,50);
-
     loginWidget->show();
-
     connect(name,SIGNAL(returnPressed()),this,SLOT(loginslot()) );
     connect(loginButton, SIGNAL(clicked()),this, SLOT(loginslot()));
 }
 
-void Widget::showLoginWidget(bool autoLogin, char *argv)
-{
-    if(autoLogin){
-        //Id From file
-        //QFile *file=new QFile("startID");
-        //file->open(QIODevice::ReadOnly|QIODevice::Text);
-        //QString text(file->readAll());
-		QString id = QString(argv);
-        //QString id = QString::number(text.toInt());
-
-        this->show();
-        //ui->textEditWrite->setFocus();
-        ui->nameLabel->setText("  "+id);
-
-        QString msg = QString("%1").arg(id,6,'0').append("01");
-        DBG<<msg<<"msg";
-        pTcpSocket->write(msg.toUtf8().data());
-
-        if(true)//auto to login
-            return ;
-    }
-
-
-    loginWidget = new QWidget();
-    loginWidget->resize(QSize(400,300));
-    loginWidget->move((this->width()-loginWidget->width())/2,(this->height()-loginWidget->height())/2);
-
-    name = new QLineEdit(loginWidget);
-    name->setMaxLength(3);
-    name->setPlaceholderText("用户名");
-    name->setFont(QFont(NULL,25));
-    //QLineEdit *secret = new QLineEdit(loginWidget);
-    //secret->setEchoMode(QLineEdit::Password);
-    //secret->setAttribute(Qt::WA_InputMethodEnabled, false);//屏蔽中文输入法
-    //secret->setPlaceholderText("密码");
-    //secret->setFont(QFont(NULL,25));
-    QPushButton *loginButton = new QPushButton(loginWidget);
-    loginButton->setText("登录");
-    loginButton->setFont(QFont(NULL,25));
-
-    name->setGeometry(50,50,300,50);
-    //secret->setGeometry(50,150,300,50);
-    loginButton->setGeometry(120,220,160,50);
-
-    loginWidget->show();
-
-    connect(name,SIGNAL(returnPressed()),this,SLOT(loginslot()) );
-    connect(loginButton, SIGNAL(clicked()),this, SLOT(loginslot()));
-}
-
-void Widget::chatWith(QModelIndex index)
-{
-    /*
-    curChat = model->data(index).toByteArray();
-    ui->chatNameLabel->setText(curChat);
-
-    showMsg();
-    */
-}
-
-void Widget::addUser(QString user)
-{
-    if(user.isEmpty()) return ;
-    if(userList.indexOf(user)==-1)
-    {
-        userList<<user;
-        model->setStringList(userList);
-
-        findOrCreate(user);
-    }
-}
-void Widget::delUser(QString user)
-{
-    int find = userList.indexOf(user);
-    if(find>0)
-    {
-        userList.removeAt(find);
-        model->setStringList(userList);
-
-        find = findOrCreate(user);
-        record[find]->msgList.clear();
-        record[find]->die = true;
-    }
-}
 
 void Widget::analyzeData()
 {
        //从通信套接字中间取出内容
-
         lastMsg = (pTcpSocket->readAll());
 
-        QString msg = QString("[%1]: %2").arg("Server").arg(lastMsg);
-        ui->textEditRead->append(msg); //在后面追加新的消息
-        if(lastMsg=="04"){
+        QString msg;
+        if(lastMsg=="04"||lastMsg=="14"||lastMsg=="24"){
+			msg = QString("[SR][请求a值]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入显示值:");
+            if(ui->radioButton->isChecked())
+                on_pushButton_2_clicked();
         }
         else if(lastMsg=="06"){
+			msg = QString("[SR][请求b值]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入当前水量:");
             ui->text2->show();
             ui->doubleSpinBox2->show();
             ui->text2->setText("请输入原值:");
+            if(ui->radioButton->isChecked())
+                on_pushButton_2_clicked();
         }
         else if(lastMsg=="07"){
+			msg = QString("[SR][请求r值]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入最终值:");
+            if(ui->radioButton->isChecked())
+                on_pushButton_2_clicked();
         }
+        else if(lastMsg.left(2)=="35"||lastMsg.left(2)=="45"){
+			msg = QString("[SR][补充指令]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+            pTcpSocket->write("80");
+            QString str = "[ME][补充回复]: 80" ;
+            ui->textEditRead->append(str);
+        }
+        else if(lastMsg.left(2)=="15"||lastMsg.left(2)=="25"||lastMsg.left(2)=="65"){
+			msg = QString("[SR][调试通知]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+            pTcpSocket->write("55");
+            QString str = "[ME][通知确认]: 55" ;
+            ui->textEditRead->append(str);
+        }
+        else if(lastMsg.left(2)=="05"){
+			msg = QString("[SR][VS终值返回]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
+        else if(lastMsg.left(2)=="08"){
+			msg = QString("[SR][精度稳定返回]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
+        else if(lastMsg=="11"){
+			msg = QString("[SR][切换精度]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
+        else if(lastMsg=="91"){
+			msg = QString("[SR][中止调试]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
+        else if(lastMsg=="ok"){
+			msg = QString("[SR][连接成功]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
+		else{
+			msg = QString("[SR][暂未识别]: %2").arg(lastMsg);
+			ui->textEditRead->append(msg); //在后面追加新的消息
+		}
 
 
-        //startReplyTimer();
-        /*
-        if(list.at(0)=="Logout")//-1
-        {
-            delUser(list.at(1));
-        }
-        else if(list.at(0)=="Udp_Init")//4
-        {
-            qint16 pp = list.at(1).toInt();
-            udpPort = pp;
-            DBG<<"udp Port is "<<udpPort;
-            initUdpSocket();
-        }
-        else if(list.at(0)=="Login")//0
-        {
-            addUser(list.at(1));
-        }
-        else if(list.at(0)=="QunFa")
-        {
-            QString send = list.at(1);
-            QString context = list.at(2);
-            msg = QString("[%1]: %2").arg(send).arg(context);
-            //ui->textEditRead->append(msg); //在后面追加新的消息
-            recordMsg("设备", msg);
-            changeChatWith(0);
-        showMsg();
-        }
-        else if(list.at(0)=="SiLiao")
-        {
-            QString send = list.at(1);
-            QString context = list.at(2);
-            msg = QString("[%1]: %2").arg(send).arg(context);
-            //ui->textEditRead->append(msg); //在后面追加新的消息
-            recordMsg(send, msg);
-            int find = userList.indexOf(send);
-            if(find!=-1)
-                changeChatWith(find);
-        showMsg();
-        }
-        else if(list.at(0)=="FileList")
-        {
-            DBG<<"FileList";
-            int ss = list.at(1).toInt();
-            DBG<<"Size :"<<ss;
-            if(ss>0)
-            {
-                QList<QByteArray> list2 = list.at(2).split('$');
-                int sss = list2.size()-1;
-                DBG<<"file sss*3:"<<sss;
-                fileNum = 0;
-                for(int i=0;i<sss;i+=3,fileNum++)
-                {
-                    DBG<<list2.at(i);
-                    fileinfo[fileNum].filename = list2.at(i);
-                    fileinfo[fileNum].filesize = list2.at(i+1);
-                    fileinfo[fileNum].sizecount = list2.at(i+2);
-                }
-            }
-
-        }
-        */
 }
 
 
-void Widget::changeChatWith()
-{
-    /*
-    QModelIndex curindex = list->currentIndex();
-
-    if(cur==-1)
-    {
-        //切换列表
-        if(curindex.row()<list->model()->rowCount()-1)
-            list->setCurrentIndex(list->model()->index(curindex.row()+1,0));
-        else
-            list->setCurrentIndex(list->model()->index(0,0));
-
-    }
-    else
-    {
-        list->setCurrentIndex(list->model()->index(cur,0));
-
-    }
-
-
-    curChat = model->data(list->currentIndex()).toByteArray();
-    ui->chatNameLabel->setText(curChat);
-    */
-
-    showMsg();
-}
-
-void Widget::showMsg()
-{
-    ui->textEditRead->clear();
-    int find = findOrCreate(curChat);
-    for(int i=0;i<record[find]->msgList.size();i++)
-    {
-        ui->textEditRead->append(record[find]->msgList.at(i));
-    }
-}
-
-int Widget::findOrCreate(QString na)
-{
-    int firstDieUser=maxUserNum;
-    for(int i=0;i<maxUserNum;i++)
-    {
-        if(record[i]->name==na&&record[i]->die==false)
-        {
-            return i;
-        }
-        else if(firstDieUser==maxUserNum&&record[i]->die==true)
-        {
-            firstDieUser = i;
-        }
-    }
-    if(maxUserNum==firstDieUser)
-        maxUserNum++;
-    record[firstDieUser] = new Record();
-    record[firstDieUser]->die = false;
-    record[firstDieUser]->name = na;
-    return firstDieUser;
-}
-
-void Widget::recordMsg(QString send, QString msg)
-{
-    int find = findOrCreate(send);
-    record[find]->msgList.append(msg);
-    /*
-    if(curChat!=send)
-    {
-        record[find]->isread = false;
-
-        find = userList.indexOf(user);
-        if(find>0)
-        {
-            model->setStringList(userList);
-
-            find = findOrCreate(user);
-            record[find]->msgList.clear();
-            record[find]->die = true;
-        }
-    }
-    */
-}
-
-void Widget::test()
-{
-    this->show();
-    id = QString("id%1").arg(rand()%100);
-//    ui->textEditWrite->setFocus();
-    ui->nameLabel->setText("  "+id);
-}
-
-/*
-void Widget::on_sendFilePushButton_clicked()
-{
-    QString fileName = QFileDialog::getOpenFileName(this,"选择发送的文件",QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-
-    file.setFileName(fileName);
-    QFileInfo qFileinfo;
-    qFileinfo.setFile(fileName);
-    all_pianShu = qFileinfo.size()/ONE_SIZE+1;
-    DBG<<"size is "<<qFileinfo.size()<<"---总片数为:"<<all_pianShu;
-
-    DBG<<fileName;
-    i = 0;
-
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        DBG<<"打不开";
-        return;
-    }
-
-    QStringList sp = fileName.split("/");
-    QString startmsg = QString("start#%1").arg(sp.at(sp.size()-1));
-    DBG<<pTcpSocket->peerAddress()<<"----"<<66*udpPort;
-    udpSocket->writeDatagram( startmsg.toUtf8().data() , pTcpSocket->peerAddress(),66*udpPort);
-    DBG<<"send "<<startmsg<<"   to "<<66*udpPort;
-}
-
-*/
-void Widget::sendData()
-{
-    if(!file.atEnd())
-    {
-        QByteArray line = file.read(ONE_SIZE);
-        udpSocket->writeDatagram( line , pTcpSocket->peerAddress(),66*udpPort);
-        i++;
-        qDebug() << "send over!" << i << line.size();
-    }
-    else
-    {
-        QString msg = QString("end#%1").arg(i);
-        udpSocket->writeDatagram( msg.toUtf8().data() , pTcpSocket->peerAddress(),66*udpPort);
-    }
-}
-
-void Widget::initUdpSocket()
-{
-    i = 0;
-    udpSocket = new QUdpSocket(this);
-    DBG<<"bind:"<<pTcpSocket->peerAddress()<<"---"<<666*udpPort;
-    udpSocket->bind(pTcpSocket->peerAddress(),666*udpPort);
-
-    connect(udpSocket, SIGNAL(readyRead()),
-    this, SLOT(readPendingDatagrams()));
-}
-
-void Widget::readPendingDatagrams()
-{
-    //receive
-    DBG<<"receive";
-    QByteArray datagram;
-    while (udpSocket->hasPendingDatagrams())
-    {
-        datagram.resize(udpSocket->pendingDatagramSize());
-        QHostAddress sender;
-        quint16 senderPort;
-
-        udpSocket->readDatagram(datagram.data(), datagram.size(),
-        &sender, &senderPort);
-
-        if(datagram.indexOf("end#")!=-1)
-        {
-            DBG<<"end";
-            receiving = false;
-            file.close();
-        }
-        else if(datagram.indexOf("start#")!=-1)
-        {
-            DBG<<"start";
-            receiving = true;
-
-            file.setFileName("timRecv/"+datagram.split('#').at(1));
-            i = 0;
-            if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered))
-            {
-                qDebug()<<"无法接收"<<endl;
-                return ;
-            }
-            else
-            {
-                file.resize(0);
-                i++;
-                udpSocket->writeDatagram("6",1, pTcpSocket->peerAddress(), 66*udpPort);
-            }
-        }
-        else if(datagram=="6")
-        {
-            sendData();
-        }
-        else if(receiving)
-        {
-
-            file.write(datagram.data(),datagram.size());
-
-            i++;
-            udpSocket->writeDatagram("6",1, pTcpSocket->peerAddress(), 66*udpPort);
-
-            DBG<<"port:"<<senderPort<<" "<< i <<"=>"<< datagram.size();
-        }
-    }
-}
-
-/*
-void Widget::on_acceptFilePushButton_clicked()
-{
-
-    fileWidget = new QTableWidget();
-    fileWidget->resize(QSize(670,500));
-    fileWidget->setColumnCount(4);
-
-    QStringList headers;
-    headers<<"名称"<<"类型"<<"大小"<<"片数";
-    fileWidget->setHorizontalHeaderLabels(headers);
-    fileWidget->horizontalHeader()->resizeSection(0,300);
-
-
-    //设置内容
-    for(int i=0;i<fileNum;i++)
-    {
-        QTableWidgetItem *item0 = new QTableWidgetItem();
-        QTableWidgetItem *item1 = new QTableWidgetItem();
-        QTableWidgetItem *item2 = new QTableWidgetItem();
-        QTableWidgetItem *item3 = new QTableWidgetItem();
-        fileWidget->insertRow(i);
-        item0->setText(fileinfo[i].filename);
-
-        //类型
-        int s3 = fileinfo[i].filename.split('.').size();
-        QString  type;
-        if(s3>1)
-            type = QString("%1 File").arg(fileinfo[i].filename.split('.').at(s3-1));
-        else
-            type = QString("未知文件");
-
-        item1->setText(type);
-        item2->setText(fileinfo[i].filesize);
-        item3->setText(fileinfo[i].sizecount);
-        fileWidget->setItem(i,0,item0);
-        fileWidget->setItem(i,1,item1);
-        fileWidget->setItem(i,2,item2);
-        fileWidget->setItem(i,3,item3);
-    }
-
-    connect(fileWidget,&QTableWidget::doubleClicked,
-            [=](){
-
-                int curitem = fileWidget->currentRow();
-                all_pianShu = fileinfo[curitem].sizecount.toInt();
-                QString msg = QString("RequestFile#%1").arg(fileinfo[curitem].filename);
-                pTcpSocket->write(msg.toUtf8().data());
-                fileWidget->close();
-
-            });
-
-    fileWidget->setStyleSheet("selection-background-color:red");
-    fileWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    fileWidget->show();
-
-}
-
-*/
 void Widget::closeEvent(QCloseEvent *e)
 {
     Disconnect();
     e->accept();
 }
-
-void Widget::startReplyTimer(){
-    replyTimer->start(1000);
-}
-
-void Widget::stopReplyTimer(){
-    replyTimer->stop();
-    on_pushButton_2_clicked();
-}
-
 
 void Widget::connectslot()
 {
@@ -713,4 +270,9 @@ void  Widget::loginslot()
 	while(id.size()!=6) id.append(" ");
     QString msg = id.append("01");
     pTcpSocket->write(msg.toUtf8().data());
+}
+
+void Widget::slot_disconnect(){
+   ui->textEditRead->append("断开连接");
+   connected = false;
 }
