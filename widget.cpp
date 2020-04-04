@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include <QHostAddress>
 #include <time.h>
+#include <QTime>
 #define ONE_SIZE 8000
 #define DBG qDebug()<<__FILE__<<__FUNCTION__<<"():"<<__LINE__
 /// 用户名居中显示
@@ -80,7 +81,7 @@ void Widget::on_connectPushButton_clicked()
             connected = false;
 
             pTcpSocket->disconnectFromHost();
-            ui->textEditRead->append("断开连接");
+            showLog("断开连接");
         }
         else
         {
@@ -106,19 +107,19 @@ void Widget::on_pushButton_2_clicked()
         sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[ME][回复a值]: " + QString(msg);
-        ui->textEditRead->append(str);
+        showLog(str);
     }
     else if(lastMsg == "06"){
         sprintf(msg,"%06d03%08.3f%08.3f", id.toInt(),ui->doubleSpinBox1->value(),ui->doubleSpinBox2->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[ME][回复b值]: " + QString(msg);
-        ui->textEditRead->append(str);
+        showLog(str);
     }
     else if(lastMsg == "07"){
         sprintf(msg,"%06d02%08.3f", id.toInt(),ui->doubleSpinBox1->value());
         pTcpSocket->write(QString(msg).toUtf8().data());
         QString str = "[ME][回复r值]: " + QString(msg);
-        ui->textEditRead->append(str);
+        showLog(str);
     }
 
     ui->text1->hide();
@@ -140,7 +141,7 @@ void Widget::Disconnect()
    connected = false;
 
     pTcpSocket->disconnectFromHost();
-    ui->textEditRead->append("断开连接");
+    showLog("断开连接");
 
     this->close();
 }
@@ -171,76 +172,100 @@ void Widget::showLoginWidget()
 void Widget::analyzeData()
 {
        //从通信套接字中间取出内容
-        lastMsg = (pTcpSocket->readAll());
+    rcMsg = pTcpSocket->readAll();
 
         QString msg;
-        if(lastMsg=="04"||lastMsg=="14"||lastMsg=="24"){
-			msg = QString("[SR][请求a值]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        if(rcMsg=="04"||rcMsg=="14"||rcMsg=="24"){
+            msg = QString("[SR][请求a值]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入显示值:");
+            lastMsg = rcMsg;
             if(ui->radioButton->isChecked())
                 on_pushButton_2_clicked();
         }
-        else if(lastMsg=="06"){
-			msg = QString("[SR][请求b值]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="06"){
+            msg = QString("[SR][请求b值]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入当前水量:");
             ui->text2->show();
             ui->doubleSpinBox2->show();
             ui->text2->setText("请输入原值:");
+            lastMsg = rcMsg;
             if(ui->radioButton->isChecked())
                 on_pushButton_2_clicked();
         }
-        else if(lastMsg=="07"){
-			msg = QString("[SR][请求r值]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="07"){
+            msg = QString("[SR][请求r值]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
             ui->text1->show();
             ui->doubleSpinBox1->show();
             ui->text1->setText("请输入最终值:");
+            lastMsg = rcMsg;
             if(ui->radioButton->isChecked())
                 on_pushButton_2_clicked();
         }
-        else if(lastMsg.left(2)=="35"||lastMsg.left(2)=="45"){
-			msg = QString("[SR][补充指令]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg.left(2)=="35"||rcMsg.left(2)=="45"){
+            msg = QString("[SR][补充指令]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
             pTcpSocket->write("80");
             QString str = "[ME][补充回复]: 80" ;
-            ui->textEditRead->append(str);
+            showLog(str);
         }
-        else if(lastMsg.left(2)=="15"||lastMsg.left(2)=="25"||lastMsg.left(2)=="65"){
-			msg = QString("[SR][调试通知]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg.left(2)=="15"||rcMsg.left(2)=="25"||rcMsg.left(2)=="65"){
+            msg = QString("[SR][调试通知]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
             pTcpSocket->write("55");
             QString str = "[ME][通知确认]: 55" ;
-            ui->textEditRead->append(str);
+            showLog(str);
         }
-        else if(lastMsg.left(2)=="05"){
-			msg = QString("[SR][VS终值返回]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg.left(2)=="05"){
+            msg = QString("[SR][VS终值返回]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
 		}
-        else if(lastMsg.left(2)=="08"){
-			msg = QString("[SR][精度稳定返回]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="18"){
+            msg = QString("[SR][精度调试OK]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
+        }
+        else if(rcMsg.left(2)=="08"){
+            msg = QString("[SR][精度稳定返回]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
+            pTcpSocket->write("80");
+            QString str = "[ME][新一轮通知确认]: 80" ;
+            showLog(str);
+        }
+        else if(rcMsg=="11"){
+            msg = QString("[SR][切换精度]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
 		}
-        else if(lastMsg=="11"){
-			msg = QString("[SR][切换精度]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="16"){
+            msg = QString("[SR][新一轮通知]: %2").arg(rcMsg);
+            showLog(msg); //在后面追加新的消息
+            pTcpSocket->write("80");
+            QString str = "[ME][新一轮通知确认]: 80" ;
+            showLog(str);
+        }
+        else if(rcMsg=="91"){
+            msg = QString("[SR][中止调试]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
 		}
-        else if(lastMsg=="91"){
-			msg = QString("[SR][中止调试]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="ok"){
+            msg = QString("[SR][连接成功]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
 		}
-        else if(lastMsg=="ok"){
-			msg = QString("[SR][连接成功]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
-		}
-		else{
-			msg = QString("[SR][暂未识别]: %2").arg(lastMsg);
-			ui->textEditRead->append(msg); //在后面追加新的消息
+        else if(rcMsg=="66"){
+            msg = QString("[SR][心跳]: %1").arg(rcMsg);
+            showLog(msg); //在后面追加新的消息
+            pTcpSocket->write("66");
+            QString str = "[ME][心跳]: 66" ;
+            showLog(str);
+        }
+        else{
+            msg = QString("[SR][暂未识别]: %2").arg(rcMsg);
+			showLog(msg); //在后面追加新的消息
 		}
 
 
@@ -256,7 +281,7 @@ void Widget::closeEvent(QCloseEvent *e)
 void Widget::connectslot()
 {
    ui->connectPushButton->setText("已连接");
-   ui->textEditRead->append("连接成功");
+   showLog("连接成功");
    connected = true;
 }
 
@@ -273,6 +298,12 @@ void  Widget::loginslot()
 }
 
 void Widget::slot_disconnect(){
-   ui->textEditRead->append("断开连接");
+   showLog("断开连接");
    connected = false;
+}
+
+void Widget::showLog(QString msg){
+    QString time = QTime::currentTime().toString("hh:mm:ss");
+    QString msg2 = QString("[%1]%2").arg(time).arg(msg);
+    ui->textEditRead->append(msg2);
 }

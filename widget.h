@@ -95,10 +95,12 @@ private:
     int i;
 
     QString lastMsg;
+    QString rcMsg;
 
     QTableWidget *fileWidget;
     FileInfo    fileinfo[100];
 
+    void showLog(QString msg);
 };
 
 #endif // WIDGET_H
